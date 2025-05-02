@@ -4,6 +4,7 @@ using InventoryManagementSystemAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventoryManagementSystemAPI.Migrations
 {
     [DbContext(typeof(InventoryTransactionsContext))]
-    partial class InventoryTransactionsContextModelSnapshot : ModelSnapshot
+    [Migration("20250429210916_user")]
+    partial class user
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,62 +90,15 @@ namespace InventoryManagementSystemAPI.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("InventoryManagementSystemAPI.Models.Inventory", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("LowStockThreshold")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WarehouseId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("WarehouseId");
-
-                    b.ToTable("Inventory");
-                });
-
             modelBuilder.Entity("InventoryManagementSystemAPI.Models.InventoryTransaction", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FromWarehouseId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("InventoryID")
+                    b.Property<int>("FromWarehouseId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
@@ -151,10 +107,13 @@ namespace InventoryManagementSystemAPI.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ProductInventoryId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ToWarehouseId")
+                    b.Property<int>("ToWarehouseId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("TransactionDate")
@@ -166,13 +125,13 @@ namespace InventoryManagementSystemAPI.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.HasIndex("FromWarehouseId");
 
-                    b.HasIndex("InventoryID");
-
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductInventoryId");
 
                     b.HasIndex("ToWarehouseId");
 
@@ -183,17 +142,14 @@ namespace InventoryManagementSystemAPI.Migrations
 
             modelBuilder.Entity("InventoryManagementSystemAPI.Models.Notification", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -204,7 +160,7 @@ namespace InventoryManagementSystemAPI.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.HasIndex("ProductId");
 
@@ -213,17 +169,11 @@ namespace InventoryManagementSystemAPI.Migrations
 
             modelBuilder.Entity("InventoryManagementSystemAPI.Models.Product", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -237,24 +187,53 @@ namespace InventoryManagementSystemAPI.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("InventoryManagementSystemAPI.Models.Warehouse", b =>
+            modelBuilder.Entity("InventoryManagementSystemAPI.Models.ProductInventory", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("CreatedBy")
+                    b.Property<int>("LowStockThreshold")
                         .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("ProductInventory");
+                });
+
+            modelBuilder.Entity("InventoryManagementSystemAPI.Models.Warehouse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -267,7 +246,7 @@ namespace InventoryManagementSystemAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Warehouses");
                 });
@@ -405,35 +384,13 @@ namespace InventoryManagementSystemAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("InventoryManagementSystemAPI.Models.Inventory", b =>
-                {
-                    b.HasOne("InventoryManagementSystemAPI.Models.Product", "Product")
-                        .WithMany("Inventories")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InventoryManagementSystemAPI.Models.Warehouse", "Warehouse")
-                        .WithMany("Inventories")
-                        .HasForeignKey("WarehouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Warehouse");
-                });
-
             modelBuilder.Entity("InventoryManagementSystemAPI.Models.InventoryTransaction", b =>
                 {
                     b.HasOne("InventoryManagementSystemAPI.Models.Warehouse", "FromWarehouse")
                         .WithMany("OutgoingInventoryTransactions")
                         .HasForeignKey("FromWarehouseId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("InventoryManagementSystemAPI.Models.Inventory", null)
-                        .WithMany("InventoryTransactions")
-                        .HasForeignKey("InventoryID");
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("InventoryManagementSystemAPI.Models.Product", "Product")
                         .WithMany()
@@ -441,10 +398,15 @@ namespace InventoryManagementSystemAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("InventoryManagementSystemAPI.Models.ProductInventory", null)
+                        .WithMany("InventoryTransactions")
+                        .HasForeignKey("ProductInventoryId");
+
                     b.HasOne("InventoryManagementSystemAPI.Models.Warehouse", "ToWarehouse")
                         .WithMany("IncomingInventoryTransactions")
                         .HasForeignKey("ToWarehouseId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("InventoryManagementSystemAPI.Models.ApplicationUser", "User")
                         .WithMany()
@@ -468,6 +430,25 @@ namespace InventoryManagementSystemAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("InventoryManagementSystemAPI.Models.ProductInventory", b =>
+                {
+                    b.HasOne("InventoryManagementSystemAPI.Models.Product", "Product")
+                        .WithMany("Inventories")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InventoryManagementSystemAPI.Models.Warehouse", "Warehouse")
+                        .WithMany("Inventories")
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Warehouse");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -521,14 +502,14 @@ namespace InventoryManagementSystemAPI.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("InventoryManagementSystemAPI.Models.Inventory", b =>
-                {
-                    b.Navigation("InventoryTransactions");
-                });
-
             modelBuilder.Entity("InventoryManagementSystemAPI.Models.Product", b =>
                 {
                     b.Navigation("Inventories");
+                });
+
+            modelBuilder.Entity("InventoryManagementSystemAPI.Models.ProductInventory", b =>
+                {
+                    b.Navigation("InventoryTransactions");
                 });
 
             modelBuilder.Entity("InventoryManagementSystemAPI.Models.Warehouse", b =>

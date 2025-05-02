@@ -4,6 +4,7 @@ using InventoryManagementSystemAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventoryManagementSystemAPI.Migrations
 {
     [DbContext(typeof(InventoryTransactionsContext))]
-    partial class InventoryTransactionsContextModelSnapshot : ModelSnapshot
+    [Migration("20250430180634_details")]
+    partial class details
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,6 +110,9 @@ namespace InventoryManagementSystemAPI.Migrations
                     b.Property<int>("LowStockThreshold")
                         .HasColumnType("int");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
@@ -139,7 +145,7 @@ namespace InventoryManagementSystemAPI.Migrations
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int?>("FromWarehouseId")
+                    b.Property<int>("FromWarehouseId")
                         .HasColumnType("int");
 
                     b.Property<int?>("InventoryID")
@@ -154,7 +160,7 @@ namespace InventoryManagementSystemAPI.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ToWarehouseId")
+                    b.Property<int>("ToWarehouseId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("TransactionDate")
@@ -429,7 +435,8 @@ namespace InventoryManagementSystemAPI.Migrations
                     b.HasOne("InventoryManagementSystemAPI.Models.Warehouse", "FromWarehouse")
                         .WithMany("OutgoingInventoryTransactions")
                         .HasForeignKey("FromWarehouseId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("InventoryManagementSystemAPI.Models.Inventory", null)
                         .WithMany("InventoryTransactions")
@@ -444,7 +451,8 @@ namespace InventoryManagementSystemAPI.Migrations
                     b.HasOne("InventoryManagementSystemAPI.Models.Warehouse", "ToWarehouse")
                         .WithMany("IncomingInventoryTransactions")
                         .HasForeignKey("ToWarehouseId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("InventoryManagementSystemAPI.Models.ApplicationUser", "User")
                         .WithMany()
