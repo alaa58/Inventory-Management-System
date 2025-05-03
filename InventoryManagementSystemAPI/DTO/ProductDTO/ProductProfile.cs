@@ -16,5 +16,6 @@ public class ProductProfile : Profile
             .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
             .ReverseMap();
+        CreateMap<Product, ProductsBelowLowStockThresholdDTO>().ReverseMap();
     }
 }

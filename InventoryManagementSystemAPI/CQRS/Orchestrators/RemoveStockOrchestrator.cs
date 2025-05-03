@@ -36,11 +36,8 @@ namespace InventoryManagementSystemAPI.CQRS.Orchestrators
            .FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
 
-            // Step 1: Remove to Inventory
             var inventoryResult = await _mediator.Send(new RemoveStockCommand(dto.Quantity, dto.ProductId, dto.WarehouseId));
 
-            // Step 2: Remove Transaction Log
-              // Step 2: Add Transaction Log
             var transactionDto = new InventoryTransactionAddStockDTO
             {
                 ProductId = dto.ProductId,

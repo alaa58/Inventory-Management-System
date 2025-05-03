@@ -10,6 +10,8 @@ namespace InventoryManagementSystemAPI.DTO.InventoryTransactionDTO
             CreateMap<InventoryTransactionAddStockDTO, InventoryTransaction>().ReverseMap();
             CreateMap<InventoryTransaction, InventoryTransactionAddStockDTO>().ReverseMap();
             CreateMap<InventoryTransaction, InventoryTransactionRemoveStockDTO>().ReverseMap();
+            CreateMap<InventoryTransaction, TransferInventoryTransactionDTO>().ReverseMap();
+            CreateMap<InventoryTransaction, TransactionHistoryDTO>().ReverseMap();
         }
     }
 }

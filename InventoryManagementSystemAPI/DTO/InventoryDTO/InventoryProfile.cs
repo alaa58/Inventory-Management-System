@@ -18,6 +18,7 @@ namespace InventoryManagementSystemAPI.DTO.InventoryDTO
                 .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
                 .ReverseMap();
             CreateMap<Inventory, RemoveStockDTO>().ReverseMap();
+            CreateMap<Inventory, TransferStockDTO>().ReverseMap();
 
         }
     }

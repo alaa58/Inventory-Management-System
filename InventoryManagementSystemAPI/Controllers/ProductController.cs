@@ -1,5 +1,6 @@
 ﻿using InventoryManagementSystemAPI.CQRS.Commands.ProductCommands;
 using InventoryManagementSystemAPI.CQRS.Queries.ProductQueries;
+using InventoryManagementSystemAPI.DTO;
 using InventoryManagementSystemAPI.DTO.Product;
 using InventoryManagementSystemAPI.DTO.ProductDTO;
 using InventoryManagementSystemAPI.Models;
@@ -27,9 +28,9 @@ namespace InventoryManagementSystemAPI.Controllers
                 if (ModelState.IsValid)
                 {
                     var result = await mediator.Send(command);
-                    return Ok(result);
+                    return Ok(ResponseDTO<AddProductDTO>.Succeded(result, "product added successfully"));
                 }
-                return BadRequest(ModelState);
+                return BadRequest(ResponseDTO<AddProductDTO>.Error(ErrorCode.UnExcepectedError,"failed"));
             }
             catch (Exception ex)
             {
@@ -46,9 +47,10 @@ namespace InventoryManagementSystemAPI.Controllers
                 {
                     UpdateProductCommand command = new UpdateProductCommand(id, productDTO);
                     UpdateProductDTO result = await mediator.Send(command);
-                    return Ok(result);
+
+                    return Ok(ResponseDTO<UpdateProductDTO>.Succeded(result, "product updated successfully"));
                 }
-                return BadRequest(ModelState);
+                return BadRequest(ResponseDTO<UpdateProductDTO>.Error(ErrorCode.UnExcepectedError,"failed"));
             }
             catch (Exception ex)
             {
@@ -60,65 +62,81 @@ namespace InventoryManagementSystemAPI.Controllers
         {
             try
             {
-                RemoveProductCommand command = new RemoveProductCommand(id);
-                await mediator.Send(command);
-                if (command == null)
-                {
-                    return NotFound();
-                }
-                return NoContent();
+                var command = new RemoveProductCommand(id);
+                var result = await mediator.Send(command);
+
+                return Ok(ResponseDTO<string>.Succeded(null, "Product removed successfully"));
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    ResponseDTO<string>.Error(ErrorCode.UnExcepectedError, $"Internal server error: {ex.Message}"));
             }
-
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
             try
             {
-                GetAllProductQuery command = new GetAllProductQuery(new AllProductsDTO());
-                var result = await mediator.Send(command);
+                var result = await mediator.Send(new GetAllProductQuery(new AllProductsDTO()));
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    ResponseDTO<List<AllProductsDTO>>.Error(ErrorCode.UnExcepectedError, $"Internal server error: {ex.Message}"));
             }
         }
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetProductById(int id)
         {
             try
             {
-                GetProductByIdQuery command = new GetProductByIdQuery(id, new GetProductByIdDTO());
-                var result = await mediator.Send(command);
+                var result = await mediator.Send(new GetProductByIdQuery(id, new GetProductByIdDTO()));
                 if (result == null)
                 {
-                    return NotFound();
+                    return NotFound(ResponseDTO<GetProductByIdDTO>.Error(ErrorCode.NotFound, $"product with id {id} not found"));
                 }
-                return Ok(result);
+                return Ok(ResponseDTO<GetProductByIdDTO>.Succeded(result, "product retrieved successfully"));
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    ResponseDTO<GetProductByIdDTO>.Error(ErrorCode.UnExcepectedError, $"Internal server error: {ex.Message}"));
             }
         }
+
         [HttpGet("GetProductsInTheInventory")]
         public async Task<IActionResult> GetProductsInTheInventory()
         {
             try
             {
-                GetAllProductsInTheInventoryQuery command = new GetAllProductsInTheInventoryQuery(new GetAllProductsInTheInventoryDTO());
-                var result = await mediator.Send(command);
+                var result = await mediator.Send(new GetAllProductsInTheInventoryQuery(new GetAllProductsInTheInventoryDTO()));
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    ResponseDTO<List<GetAllProductsInTheInventoryDTO>>.Error(ErrorCode.UnExcepectedError, $"Internal server error: {ex.Message}"));
             }
         }
+
+        [HttpGet("products below their LowStockThreshold")]
+        public async Task<IActionResult> GetProductsBelowLowStockThreshold()
+        {
+            try
+            {
+                var result = await mediator.Send(new GetProductsBelowLowStockThresholdQuery());
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    ResponseDTO<List<ProductsBelowLowStockThresholdDTO>>.Error(ErrorCode.UnExcepectedError, $"Internal server error: {ex.Message}"));
+            }
+        }
+
     }
 }
