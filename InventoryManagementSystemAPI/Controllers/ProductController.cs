@@ -5,6 +5,7 @@ using InventoryManagementSystemAPI.DTO.Product;
 using InventoryManagementSystemAPI.DTO.ProductDTO;
 using InventoryManagementSystemAPI.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,7 @@ namespace InventoryManagementSystemAPI.Controllers
             this.mediator = mediator;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddProduct(AddProductCommand command)
         {
             try
@@ -39,6 +41,7 @@ namespace InventoryManagementSystemAPI.Controllers
 
         }
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateProduct(int id, UpdateProductDTO productDTO)
         {
             try
@@ -58,6 +61,7 @@ namespace InventoryManagementSystemAPI.Controllers
             }
         }
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RemoveProduct(int id)
         {
             try
@@ -75,6 +79,7 @@ namespace InventoryManagementSystemAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> GetAllProducts()
         {
             try
@@ -90,6 +95,7 @@ namespace InventoryManagementSystemAPI.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> GetProductById(int id)
         {
             try
@@ -109,6 +115,8 @@ namespace InventoryManagementSystemAPI.Controllers
         }
 
         [HttpGet("GetProductsInTheInventory")]
+        [Authorize(Roles = "User")]
+
         public async Task<IActionResult> GetProductsInTheInventory()
         {
             try
@@ -124,6 +132,7 @@ namespace InventoryManagementSystemAPI.Controllers
         }
 
         [HttpGet("products below their LowStockThreshold")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> GetProductsBelowLowStockThreshold()
         {
             try
@@ -137,6 +146,5 @@ namespace InventoryManagementSystemAPI.Controllers
                     ResponseDTO<List<ProductsBelowLowStockThresholdDTO>>.Error(ErrorCode.UnExcepectedError, $"Internal server error: {ex.Message}"));
             }
         }
-
     }
 }

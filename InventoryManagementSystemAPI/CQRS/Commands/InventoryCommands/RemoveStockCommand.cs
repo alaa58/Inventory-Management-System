@@ -4,6 +4,7 @@ using InventoryManagementSystemAPI.Data;
 using InventoryManagementSystemAPI.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Hangfire;
 namespace InventoryManagementSystemAPI.CQRS.Commands.InventoryCommands
 {
     public class RemoveStockCommand : IRequest<RemoveStockDTO>
@@ -40,13 +41,15 @@ namespace InventoryManagementSystemAPI.CQRS.Commands.InventoryCommands
             {
                 throw new Exception("Not enough stock");
             }
-            else if (inventory.Quantity == request.Quantity)
-            {
-                inventory.IsDeleted = true;
-            }
             else
             {
                 inventory.Quantity -= request.Quantity;
+            }
+            if(inventory.Quantity < inventory.LowStockThreshold)
+            {
+                BackgroundJob.Enqueue(() =>
+                  Console.WriteLine($"Quantity of productID {inventory.ProductId} is below LowStockThreshold: {inventory.LowStockThreshold}")
+                );
             }
             repository.Update(inventory);
             await repository.SaveChangesAsync();

@@ -1,8 +1,12 @@
 ﻿using System.Text;
 using AutoMapper;
+using Hangfire;
+using Hangfire.Dashboard;
+using InventoryManagementSystemAPI.CQRS.Commands.NotoficationCommand;
 using InventoryManagementSystemAPI.CQRS.Commands.ProductCommands;
 using InventoryManagementSystemAPI.Data;
 using InventoryManagementSystemAPI.Interfaces;
+using InventoryManagementSystemAPI.Jobs;
 using InventoryManagementSystemAPI.Models;
 using InventoryManagementSystemAPI.Services;
 using InventoryManagementSystemAPI.Services.ProductServices;
@@ -30,6 +34,12 @@ namespace InventoryManagementSystemAPI
             builder.Services.AddAutoMapper(typeof(Program).Assembly);
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped(typeof(IGeneralRepository<>), typeof(GeneralRepository<>));
+
+            // Hangfire
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            builder.Services.AddHangfire(config =>
+                config.UseSqlServerStorage(connectionString));
+            builder.Services.AddHangfireServer();
 
             // DbContext
             builder.Services.AddDbContext<InventoryTransactionsContext>(options =>
@@ -108,6 +118,23 @@ namespace InventoryManagementSystemAPI
             var app = builder.Build();
             MapperService.Mapper = app.Services.GetService<IMapper>();
 
+            // Configure Hangfire Dashboard and Jobs
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+                app.UseHangfireDashboard("/hangfire", new DashboardOptions
+                {
+                    Authorization = new[] { new HangfireAuthorizationFilter() }
+                });
+            }
+
+            RecurringJob.AddOrUpdate<NotificationJobRunner>(
+                "auto-notification-job",
+                x => x.Run(),
+                Cron.Daily); 
+
+
             // Seed Roles
             using (var scope = app.Services.CreateScope())
             {
@@ -121,21 +148,14 @@ namespace InventoryManagementSystemAPI
                 }
             }
 
-            // Configure Middleware Pipeline
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
             app.UseStaticFiles();
             app.UseCors("MyPolicy");
-
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.MapControllers();
             app.Run();
         }
     }
+
+   
 }

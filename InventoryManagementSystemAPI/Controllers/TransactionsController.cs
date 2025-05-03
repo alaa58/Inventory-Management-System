@@ -20,7 +20,7 @@ public class TransactionsController : ControllerBase
     }
 
     [HttpPost("add-stock")]
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> AddStock(AddStockDTO dto)
     {
         try
@@ -36,6 +36,8 @@ public class TransactionsController : ControllerBase
     }
 
     [HttpPost("remove-stock")]
+    [Authorize(Roles = "Admin")]
+
     public async Task<IActionResult> RemoveStock(RemoveStockDTO dto)
     {
         try
@@ -51,6 +53,8 @@ public class TransactionsController : ControllerBase
     }
 
     [HttpPost("transfer-stock")]
+    [Authorize(Roles = "Admin")]
+
     public async Task<IActionResult> TransferStock(TransferStockDTO dto)
     {
         try
@@ -66,6 +70,8 @@ public class TransactionsController : ControllerBase
 
     }
     [HttpGet("get-transactions")]
+    [Authorize(Roles = "User")]
+
     public async Task<IActionResult> GetTransactions([FromQuery] int productId, [FromQuery] TransactionType transactionType)
     {
         try

@@ -36,7 +36,6 @@ namespace InventoryManagementSystemAPI.Controllers
                 IdentityResult result = await userManager.CreateAsync(user, userFromConsumer.Password);
                 if (result.Succeeded)
                 {
-                    // Assign Role here
                     if (!string.IsNullOrEmpty(userFromConsumer.Role))
                     {
                         await userManager.AddToRoleAsync(user, userFromConsumer.Role);

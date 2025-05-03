@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Hangfire;
 using InventoryManagementSystemAPI.Data;
 using InventoryManagementSystemAPI.Models;
 using MediatR;
@@ -41,19 +42,27 @@ namespace InventoryManagementSystemAPI.CQRS.Commands.InventoryCommands
                                         .FirstOrDefault();
 
             if (fromInventory == null)
+            {
                 throw new Exception("Product not found in source warehouse.");
+            }
 
-            if (toInventory == null)
+            else if (toInventory == null)
+            {
                 throw new Exception("Product not found in target warehouse.");
-
-            if (fromInventory.Quantity < request.Quantity)
+            }
+            else if (fromInventory.Quantity < request.Quantity)
+            {
                 throw new Exception("Not enough stock in source warehouse.");
-
+            }
             fromInventory.Quantity -= request.Quantity;
             toInventory.Quantity += request.Quantity;
-
-            if (fromInventory.Quantity == 0)
-                fromInventory.IsDeleted = true;
+            
+            if(fromInventory.Quantity < fromInventory.LowStockThreshold)
+            {
+                BackgroundJob.Enqueue(() =>
+                    Console.WriteLine($"Quantity of productID {fromInventory.ProductId} is below LowStockThreshold: {fromInventory.LowStockThreshold}")
+                );
+            }
 
             repository.Update(fromInventory);
             repository.Update(toInventory);
