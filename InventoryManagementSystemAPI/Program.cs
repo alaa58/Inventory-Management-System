@@ -123,10 +123,7 @@ namespace InventoryManagementSystemAPI
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                app.UseHangfireDashboard("/hangfire", new DashboardOptions
-                {
-                    Authorization = new[] { new HangfireAuthorizationFilter() }
-                });
+                app.UseHangfireDashboard();
             }
 
             RecurringJob.AddOrUpdate<NotificationJobRunner>(
